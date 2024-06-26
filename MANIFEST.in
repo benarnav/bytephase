@@ -1,0 +1,4 @@
+include bpe/*.c
+include bpe/*.h 
+include bpe/*.py
+include pyproject.toml
