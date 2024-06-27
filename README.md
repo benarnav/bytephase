@@ -87,5 +87,4 @@ tokenizer.save("saved_tokenizer", debug=True)
 - Add more special tokens used in models like GPT4
 
 ### 🤝 Contributing
-Contributions are welcome! Please feel free to submit a Pull Request.
-### 📄 License
+Contributions are welcome! Please post an issue first describing the issue before a pull request.
