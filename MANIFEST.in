@@ -1,4 +1,4 @@
-include bpe/*.c
-include bpe/*.h 
-include bpe/*.py
+include bytephase/*.c
+include bytephase/*.h 
+include bytephase/*.py
 include pyproject.toml
