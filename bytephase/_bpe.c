@@ -108,8 +108,7 @@ void update_text_table (text_chunk_node_t** text_table, unsigned short* word, si
 void update_bigram_table (unsigned short unigram1, unsigned short unigram2, int count, bigram_node_t **bigram_table)
 {
     int hash = hash_text(unigram1, unigram2);
-    if (bigram_table[hash] != NULL){
-    }
+
     bigram_node_t* check;
     bigram_node_t* new_node = NULL;
     int comparison;
