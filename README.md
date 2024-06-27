@@ -85,6 +85,7 @@ tokenizer.save("saved_tokenizer", debug=True)
 
 ### 🔮 Future Plans
 - Add more special tokens used in models like GPT4
+- Add ability to load other training files, like those for GPT4
 
 ### 🤝 Contributing
 Contributions are welcome! Please post an issue first describing the issue before a pull request.
