@@ -1,5 +1,5 @@
 from collections import Counter
-from typing import Dict, List, Union
+from typing import Dict, Generator, List, Union
 
 import regex
 from _bpe import build_trie, encode_inference, encode_train, manual_free_trie, train
@@ -57,7 +57,7 @@ class Tokenizer:
             manual_free_trie(self._trie)
             self._trie = None
 
-    def _read_file_in_chunks(self, file_path):
+    def _read_file_in_chunks(self, file_path) -> Generator:
         """Generator function to read a file in chunks."""
 
         with open(file_path, "rb") as f:
@@ -67,7 +67,7 @@ class Tokenizer:
                     break
                 yield chunk
 
-    def _process_chunks(self, file_path):
+    def _process_chunks(self, file_path) -> Generator:
         """Process chunks of the file using the provided regex pattern."""
 
         buffer = ""
@@ -209,7 +209,7 @@ class Tokenizer:
         output_file = file_name + ".bpe"
 
         with open(output_file, "w") as f:
-            f.write(f"bpe tokenizer by benjamin arnav v1\nregex patten: {self.pattern}\n")
+            f.write(f"bytephase tokenizer by benjamin arnav v1\nregex patten: {self.pattern}\n")
             for idx, token in self.decode_dict.items():
                 token_ints = " ".join(str(b) for b in token)
                 f.write(f"{idx} {token_ints}\n")
@@ -218,7 +218,7 @@ class Tokenizer:
             # Outputs a human-readable version
             debug_filename = file_name + "_debug.bpe"
             with open(debug_filename, "w") as f:
-                f.write(f"bpe tokenizer by benjamin arnav v1\nregex patten: {self.pattern}\n")
+                f.write(f"bytephase tokenizer by benjamin arnav v1\nregex patten: {self.pattern}\n")
                 for idx, token in self.decode_dict.items():
                     token_chars = self.decode(list(token))
                     f.write(f"{idx} {token_chars}\n")
@@ -241,7 +241,7 @@ class Tokenizer:
 
         with open(file, "r") as f:
             version_line = f.readline().strip()
-            assert version_line == "bpe tokenizer by benjamin arnav v1"
+            assert version_line == "bytephase tokenizer by benjamin arnav v1"
             regex_line = f.readline().split()
             assert regex_line[0] == "regex"
 
