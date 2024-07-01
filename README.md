@@ -78,7 +78,7 @@ custom_pattern = r'\w+|\s+|[^\w\s]+'
 tokenizer = Tokenizer(pattern=custom_pattern)
 ```
 #### Custom File Read Buffer
-The `Tokenizer` class allows you to specify a custom file read buffer size (in bytes) when initializing. This can be useful when working with large files or optimizing for specific system configurations.
+The `Tokenizer` class allows you to specify a custom file read buffer size (in bytes) when initializing. This can be useful when working with large files or optimizing for specific system configurations. Default is 2MB.
 ```python
 # Create a tokenizer with a 4MB buffer
 tokenizer = Tokenizer(file_read_buffer=4194304)
