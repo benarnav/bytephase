@@ -6,7 +6,9 @@ from _bpe import build_trie, encode_inference, encode_train, manual_free_trie, t
 
 __version__ = "1.0"
 
-GPT2_REGEX_PATTERN = r"""'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
+GPT2_REGEX_PATTERN = (
+    r"""'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
+)
 
 
 class Tokenizer:
@@ -37,13 +39,17 @@ class Tokenizer:
         "_trie",
     )
 
-    def __init__(self, pattern: Union[str, None] = None, file_read_buffer: int = 2048) -> None:
+    def __init__(
+        self, pattern: Union[str, None] = None, file_read_buffer: int = 2097152
+    ) -> None:
         """
         Initialize the Tokenizer with an optional regex pattern and buffer size.
 
         Args:
             pattern (str, optional): Custom regex pattern for tokenization.
-            If None, uses the default GPT-2 pattern. Defaults to None.
+                If None, uses the default GPT-2 pattern. Defaults to None.
+            file_read_buffer (int, optional): Size of the buffer (in bytes) used when
+                reading files for tokenization. Defaults to 2,097,152 (2MB).
         """
 
         self.pattern = GPT2_REGEX_PATTERN if pattern is None else pattern
@@ -209,7 +215,9 @@ class Tokenizer:
         output_file = file_name + ".bpe"
 
         with open(output_file, "w") as f:
-            f.write(f"bytephase tokenizer by benjamin arnav v1\nregex patten: {self.pattern}\n")
+            f.write(
+                f"bytephase tokenizer by benjamin arnav v1\nregex patten: {self.pattern}\n"
+            )
             for idx, token in self.decode_dict.items():
                 token_ints = " ".join(str(b) for b in token)
                 f.write(f"{idx} {token_ints}\n")
@@ -218,7 +226,9 @@ class Tokenizer:
             # Outputs a human-readable version
             debug_filename = file_name + "_debug.bpe"
             with open(debug_filename, "w") as f:
-                f.write(f"bytephase tokenizer by benjamin arnav v1\nregex patten: {self.pattern}\n")
+                f.write(
+                    f"bytephase tokenizer by benjamin arnav v1\nregex patten: {self.pattern}\n"
+                )
                 for idx, token in self.decode_dict.items():
                     token_chars = self.decode(list(token))
                     f.write(f"{idx} {token_chars}\n")
