@@ -36,7 +36,7 @@ decoded = tokenizer.decode(encoded)
 
 # Save and load
 tokenizer.save("saved_tokenizer")
-tokenizer.load("saved_tokenizer.bpe")
+tokenizer.load("saved_tokenizer.json")
 ```
 
 ### ⚙️ Encoding Performance

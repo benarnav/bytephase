@@ -1,5 +1,6 @@
 from collections import Counter
 from typing import Dict, Generator, List, Union
+import json
 
 import regex
 from _bpe import build_trie, encode_inference, encode_train, manual_free_trie, train
@@ -198,7 +199,7 @@ class Tokenizer:
 
     def save(self, file_name: str, debug=False) -> None:
         """
-        Save the trained tokenizer to a file.
+        Save the trained tokenizer to a JSON file.
 
         Args:
             file_name (str): The base name for the output file(s).
@@ -206,60 +207,67 @@ class Tokenizer:
                 version of the tokenizer. Defaults to False.
 
         Note:
-            Saves the tokenizer to '{file_name}.bpe'.
+            Saves the tokenizer to '{file_name}.json'.
             If debug is True, also saves a human-readable version of the
-            tokenizer to '{file_name}_debug.bpe'.
+            tokenizer to '{file_name}_debug.json'.
 
         """
 
-        output_file = file_name + ".bpe"
+        output_file = file_name + ".json"
+        tokenizer_data = {
+            "version": "bytephase tokenizer by benjamin arnav v1",
+            "regex_pattern": self.pattern,
+            "tokens": {},
+        }
 
-        with open(output_file, "w") as f:
-            f.write(
-                f"bytephase tokenizer by benjamin arnav v1\nregex patten: {self.pattern}\n"
-            )
-            for idx, token in self.decode_dict.items():
-                token_ints = " ".join(str(b) for b in token)
-                f.write(f"{idx} {token_ints}\n")
+        for idx, token in self.decode_dict.items():
+            tokenizer_data["tokens"][str(idx)] = [int(t) for t in token]
+
+        with open(output_file, "w", encoding="utf-8") as f:
+            json.dump(tokenizer_data, f, indent=2)
 
         if debug:
             # Outputs a human-readable version
-            debug_filename = file_name + "_debug.bpe"
-            with open(debug_filename, "w") as f:
-                f.write(
-                    f"bytephase tokenizer by benjamin arnav v1\nregex patten: {self.pattern}\n"
-                )
-                for idx, token in self.decode_dict.items():
-                    token_chars = self.decode(list(token))
-                    f.write(f"{idx} {token_chars}\n")
+            debug_filename = file_name + "_debug.json"
+            debug_data = tokenizer_data.copy()
+            debug_data["tokens"] = {
+                str(idx): self.decode([idx]) for idx in self.decode_dict.keys()
+            }
+            with open(debug_filename, "w", encoding="utf-8") as f:
+                json.dump(debug_data, f, indent=2, ensure_ascii=False)
 
     def load(self, file: str) -> None:
         """
-        Load a previously saved tokenizer from a .bpe file.
+        Load a previously saved tokenizer from a .json file.
 
         Args:
-            file (str): The path to the .bpe file to load.
+            file (str): The path to the .json file to load.
 
         Raises:
             AssertionError: If the file format is invalid or incompatible.
 
         Note:
-            This method updates the decode_dict attribute and rebuilds the C-based trie structure.
+            This method updates the regex pattern attribute, decode_dict attribute
+            and rebuilds the C-based trie structure.
         """
+        assert file.endswith(".json")
 
-        assert file.endswith(".bpe")
+        try:
+            with open(file, "r") as f:
+                tokenizer_data = json.load(f)
+        except json.JSONDecodeError:
+            raise ValueError(f"Invalid JSON in file: {file}")
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Tokenizer file not found: {file}")
 
-        with open(file, "r") as f:
-            version_line = f.readline().strip()
-            assert version_line == "bytephase tokenizer by benjamin arnav v1"
-            regex_line = f.readline().split()
-            assert regex_line[0] == "regex"
+        assert tokenizer_data["version"] == "bytephase tokenizer by benjamin arnav v1"
 
-            for line in f:
-                current_line = line.strip().split()
-                idx = int(current_line[0])
-                token = bytes(int(b) for b in current_line[1:])
-                self.decode_dict[idx] = token
+        self.pattern = tokenizer_data["regex_pattern"]
+        self.compiled_pattern = regex.compile(self.pattern)
+
+        self.decode_dict = {
+            int(idx): bytes(token) for idx, token in tokenizer_data["tokens"].items()
+        }
 
         self._trie = build_trie(self.decode_dict)
 
