@@ -188,7 +188,7 @@ class Tokenizer:
             encoded = encode_inference(text_chunks, self._trie)
 
         if len(encoded) < seq_len:
-            encoded += [self.pad_token_id] * (seq_len - len(encoded))
+            encoded += [self.pad_token_idx] * (seq_len - len(encoded))
         else:
             encoded = encoded[:seq_len]
 
