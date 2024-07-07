@@ -38,6 +38,10 @@ class Tokenizer:
         "file_read_buffer",
         "decode_dict",
         "_trie",
+        "eos_token",
+        "eos_token_idx",
+        "pad_token",
+        "pad_token_idx",
     )
 
     def __init__(
