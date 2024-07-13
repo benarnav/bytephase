@@ -67,8 +67,6 @@ class Tokenizer:
         self._trie = None
         self.eos_token = "<|endoftext|>"
         self.eos_token_idx = 256
-        self.pad_token = "<|pad|>"
-        self.pad_token_idx = 257
 
     def __del__(self):
         if self._trie is not None:
@@ -135,14 +133,13 @@ class Tokenizer:
             text_stats.update(matches)
         text_stats = dict(text_stats)
 
-        num_merges = vocab_size - 258
+        num_merges = vocab_size - 257
         merges = train(text_stats, len(text_stats), num_merges)
 
         self.decode_dict = {idx: bytes([idx]) for idx in range(256)}
         self.decode_dict[self.eos_token_idx] = self.eos_token.encode("utf-8")
-        self.decode_dict[self.pad_token_idx] = self.pad_token.encode("utf-8")
 
-        idx = 258
+        idx = 257
         for merge in merges:
             byte_array = bytes(merge)
             self.decode_dict[idx] = byte_array
