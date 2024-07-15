@@ -40,8 +40,6 @@ class Tokenizer:
         "_trie",
         "eos_token",
         "eos_token_idx",
-        "pad_token",
-        "pad_token_idx",
     )
 
     def __init__(
@@ -57,7 +55,7 @@ class Tokenizer:
                 reading files for tokenization. Defaults to 2,097,152 (2MB).
 
         Note:
-            This method initializes eos_token, eos_token_idx, pad_token, and pad_token_idx.
+            This method initializes eos_token and eos_token_idx.
         """
 
         self.pattern = GPT2_REGEX_PATTERN if pattern is None else pattern
@@ -148,7 +146,7 @@ class Tokenizer:
         self._trie = build_trie(self.decode_dict)
 
     def encode(
-        self, input_text: str, train_mode: bool = True, seq_len: int = 1024
+        self, input_text: str, train_mode: bool = True, seq_len: int = None
     ) -> List[int]:
         """
         Encode the input text into a list of token IDs using a C-based trie structure.
@@ -159,8 +157,7 @@ class Tokenizer:
         Args:
             input_text (str): The input text to encode.
             train_mode (bool, optional): Flag to indicate if the encoding is in training mode. Defaults to True.
-            seq_len (int, optional): The target sequence length. Defaults to 1024.
-
+            seq_len (int, optional): The target sequence length. Defaults to None.
 
         Returns:
             List[int]: A list of token IDs representing the encoded text.
@@ -184,10 +181,11 @@ class Tokenizer:
             text_chunks = self.compiled_pattern.findall(input_text)
             encoded = encode_inference(text_chunks, self._trie)
 
-        if len(encoded) < seq_len:
-            encoded += [self.pad_token_idx] * (seq_len - len(encoded))
-        else:
-            encoded = encoded[:seq_len]
+        if seq_len is not None:
+            if len(encoded) < seq_len:
+                encoded += [self.eos_token_idx] * (seq_len - len(encoded))
+            else:
+                encoded = encoded[:seq_len]
 
         return encoded
 
@@ -205,12 +203,12 @@ class Tokenizer:
             ValueError: If input is not a list of integers or if an invalid token ID is encountered.
 
         Note:
-            This method removes pad tokens (pad_token_idx) before decoding.
+            This method removes pad tokens (eos_token_idx) before decoding.
         """
         if not isinstance(input_tokens, List):
             raise ValueError("Input must be a list of integers")
 
-        input_tokens = [token for token in input_tokens if token != self.pad_token_idx]
+        input_tokens = [token for token in input_tokens if token != self.eos_token_idx]
 
         bytes_array = bytearray()
         for token in input_tokens:
