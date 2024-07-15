@@ -24,7 +24,7 @@ from bytephase import Tokenizer
 
 # Initialize and train
 tokenizer = Tokenizer()
-tokenizer.train("path/to/your_data.txt", vocab_size=10000)
+tokenizer.train("path/to/your_data.txt", vocab_size=50257)
 
 # Encode
 encoded = tokenizer.encode("Hello, world!")
