@@ -28,7 +28,7 @@ tokenizer.train("path/to/your_data.txt", vocab_size=10000)
 
 # Encode
 encoded = tokenizer.encode("Hello, world!")
-# [1869, 574, 111, 44, 1560, 33]
+# [11867, 44, 1561, 33, 256]
 
 # Decode
 decoded = tokenizer.decode(encoded)
@@ -82,6 +82,13 @@ The `Tokenizer` class allows you to specify a custom file read buffer size (in b
 ```python
 # Create a tokenizer with a 4MB buffer
 tokenizer = Tokenizer(file_read_buffer=4194304)
+```
+#### Encode with model sequence length
+Specify a sequence length and the `encode` method will pad the output if input is less than length, or clip the output if it's longer.
+```python
+tokenizer.encode("Hello, world!", seq_len=10)
+# [11867, 44, 1561, 33, 256, 256, 256, 256, 256, 256]
+# where 256 is the end of sequence token
 ```
 #### Debug Mode
 This will generate an additional human-readable file for easier inspection of the trained tokenizer.

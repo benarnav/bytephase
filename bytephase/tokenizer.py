@@ -186,6 +186,8 @@ class Tokenizer:
                 encoded += [self.eos_token_idx] * (seq_len - len(encoded))
             else:
                 encoded = encoded[:seq_len]
+        else:
+            encoded.append(self.eos_token_idx)
 
         return encoded
 
