@@ -137,11 +137,9 @@ class Tokenizer:
         self.decode_dict = {idx: bytes([idx]) for idx in range(256)}
         self.decode_dict[self.eos_token_idx] = self.eos_token.encode("utf-8")
 
-        idx = 257
-        for merge in merges:
+        for idx, merge in enumerate(merges, start=257):
             byte_array = bytes(merge)
             self.decode_dict[idx] = byte_array
-            idx += 1
 
         self._trie = build_trie(self.decode_dict)
 
